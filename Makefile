@@ -42,10 +42,28 @@ _get_login_background:
 
 build:
 	$(MAKE) -C src build
+	$(MAKE) install-login-background
+
+build-red-themes:
+	./generate-red-themes.sh
+
+install-login-background:
+	chmod +x scripts/install-login-background.sh
+	THEMES_DIR=$(CURDIR)/themes scripts/install-login-background.sh
+
+install-user-themes:
+	chmod +x install-user-themes.sh generate-red-themes.sh
+	./install-user-themes.sh
+
+install-red-system: build-red-themes
+	cp -a themes-red/Flat-Remix-Red-* $(DESTDIR)$(PREFIX)/share/themes/
+	USER_HOME=$(USER_HOME) THEMES_DIR=$(DESTDIR)$(PREFIX)/share/themes \
+		scripts/install-login-background.sh
 
 install:
 ifeq ($(DESTDIR),)
 	mkdir -p $(PREFIX)/share/themes/
+	$(MAKE) install-login-background
 	cp -a $(foreach theme,$(THEMES),themes/$(theme)) $(DESTDIR)$(PREFIX)/share/themes
 	cp -r share/ $(PREFIX)/
 	glib-compile-schemas $(PREFIX)/share/glib-2.0/schemas/
@@ -140,4 +158,4 @@ generate_changelog: _get_version _get_tag
 clean:
 	-make -C src clean
 
-.PHONY: all _get_login_background build install uninstall _get_version _get_tag dist release aur_release copr_release launchpad_release generate_changelog
+.PHONY: all _get_login_background build build-red-themes install-login-background install-user-themes install-red-system install uninstall _get_version _get_tag dist release aur_release copr_release launchpad_release generate_changelog

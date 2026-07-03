@@ -41,3 +41,5 @@ eval export TEXT_COLOR=$2
 
 rm -rf themes/*
 make -j build
+chmod +x scripts/install-login-background.sh 2>/dev/null || true
+THEMES_DIR=./themes scripts/install-login-background.sh
